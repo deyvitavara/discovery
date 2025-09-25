@@ -1,0 +1,178 @@
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discovery Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f172a;--card:#0b1220;--muted:#9aa6b2;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--ink:#e5e7eb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui}
+header{padding:20px 24px;border-bottom:1px solid #1f2937;display:flex;justify-content:space-between}
+.wrap{padding:20px;display:grid;gap:16px}
+.card{background:#0b1220;border:1px solid #1f2937;border-radius:16px;padding:16px}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(4,1fr)}
+.kpi{background:#09101a;border:1px solid #1f2937;border-radius:12px;padding:12px}
+.kpi h3{margin:0 0 6px 0;font-size:12px;color:var(--muted)}.kpi .v{font-size:22px;font-weight:700}
+.grid{display:grid;gap:16px}@media(min-width:1100px){.grid{grid-template-columns:1.3fr 1fr}}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}.help{font-size:12px;color:#cbd5e1}
+.dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+.dot.high{background:var(--bad)}.dot.medium{background:var(--warn)}.dot.low{background:var(--ok)}
+.dot.hub-DB{background:#14532d}.dot.hub-WCF{background:#713f12}.dot.hub-ASMX{background:#5b2106}.dot.hub-Reports{background:#0b3b76}.dot.hub-COM{background:#3f1d38}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #1f2937;padding:8px 6px;text-align:left}th{color:#aab4c4}
+.sev-high{color:var(--bad);font-weight:700}.sev-medium{color:var(--warn);font-weight:700}.sev-low{color:var(--ok);font-weight:700}
+.badge{font-size:10px;padding:3px 6px;border:1px solid #1f2937;border-radius:999px;background:#09101a;color:#cbd5e1}
+#net{width:100%;height:720px;border:1px solid #1f2937;border-radius:12px;background:#0b1220}
+.note{background:#0a1524;border:1px dashed #1e293b;border-radius:10px;padding:10px;margin-top:10px;color:#cbd5e1}
+.card-graph{grid-column:1 / -1}
+.grid-raid-graph{grid-template-columns:1fr}
+</style></head><body>
+<header><h1>Discovery Report</h1><div class="badge" id="meta"></div></header>
+<div class="wrap">
+
+<div class="kpis">
+  <div class="kpi"><h3>Proyecto</h3><div class="v" id="k_project"></div></div>
+  <div class="kpi"><h3>Archivos</h3><div class="v" id="k_files"></div></div>
+  <div class="kpi"><h3>LOC totales</h3><div class="v" id="k_loc"></div></div>
+  <div class="kpi"><h3>Findings</h3><div class="v" id="k_findings"></div></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Hallazgos y sizing <span class="badge">¿Qué estoy viendo?</span></h2>
+    <div class="help">Los <b>hallazgos</b> son reglas detectadas (ej. “secretos en código”, “uso de COM”). Severidad:
+      <span class="sev-high">Alta</span> (acción inmediata),
+      <span class="sev-medium">Media</span> (planificar),
+      <span class="sev-low">Baja</span> (oportunidad). El gráfico de dona muestra <b>tamaño por módulo</b> (T-shirt sizing).</div>
+    <div class="legend">
+      <div><span class="dot high"></span> Alta</div>
+      <div><span class="dot medium"></span> Media</div>
+      <div><span class="dot low"></span> Baja</div>
+      <div class="badge">Sizing: XS≤100, S 101-500, M 501-2k, L 2k-5k, XL >5k LOC</div>
+    </div>
+    <canvas id="chartSeverity" height="150" style="margin-top:10px"></canvas>
+    <canvas id="chartSizes" height="160" style="margin-top:10px"></canvas>
+    <div class="note" id="noteSeverity" style="display:none">Sin hallazgos detectados por las reglas actuales.</div>
+  </div>
+  <div class="card">
+    <h2>Estrategias recomendadas <span class="badge">priorizadas</span></h2>
+    <div id="estrategias" class="help">Se infieren de la evidencia (VB6, COM, WCF/ASMX, DB, secretos, etc.).</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Top hallazgos <span class="badge" id="bfnd"></span></h2>
+  <div class="help">Qué, dónde y cómo mitigarlo.</div>
+  <table><thead><tr><th>ID</th><th>Severidad</th><th>Archivo</th><th>Evidencia</th><th>Recomendación</th></tr></thead><tbody id="tbodyFind"></tbody></table>
+  <div class="note" id="emptyFind" style="display:none">No se detectaron hallazgos con las reglas actuales.</div>
+</div>
+
+<div class="grid grid-raid-graph">
+  <div class="card">
+    <h2>RAID <span class="badge">glosario</span></h2>
+    <div class="help">RAID = <b>Riesgos</b>, <b>Supuestos</b>, <b>Issues</b>, <b>Dependencias</b>. Ayuda a planificar y mitigar.</div>
+    <table><thead><tr><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Mitigación</th><th>Owner</th></tr></thead><tbody id="tbodyRaid"></tbody></table>
+    <div class="note" id="emptyRaid" style="display:none">Sin entradas RAID.</div>
+  </div>
+  <div class="card card-graph">
+    <h2>Grafo de dependencias <span class="badge" id="bedges"></span></h2>
+    <div class="legend">
+      <div><span class="dot hub-DB"></span> DB</div>
+      <div><span class="dot hub-WCF"></span> WCF</div>
+      <div><span class="dot hub-ASMX"></span> ASMX</div>
+      <div><span class="dot hub-Reports"></span> Reports</div>
+      <div><span class="dot hub-COM"></span> COM/ActiveX</div>
+    </div>
+    <div id="net"></div>
+    <div class="note" id="emptyGraph" style="display:none">No hay relaciones detectadas (edges). Al habilitar reglas de llamadas el grafo se poblará.</div>
+  </div>
+</div>
+
+<div class="card" id="dbCard" style="display:none">
+  <h2>SQL Server (read-only) <span class="badge">conteos</span></h2>
+  <div id="dbSummary"></div>
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+window.REPORT={"db":null,"findings":[{"evidence":"Crystal Decisions detectado","file":"Reports\\Legacy.rpt","id":"CRYSTAL_REPORTS","line":null,"recommendation":"Servicio central de reportes/PDF, desacoplar del cliente.","severity":"medium"},{"evidence":"SSRS/ReportViewer detectado","file":"Reports\\Monthly.rdl","id":"SSRS_REPORTS","line":null,"recommendation":"Servicio central de reportes/PDF, desacoplar del cliente.","severity":"low"},{"evidence":"Uso de WCF/ASMX","file":"Services\\Legacy.asmx","id":"LEGACY_SOAP","line":null,"recommendation":"Publicar REST/gRPC equivalentes y migrar consumidores; mantener compatibilidad temporal.","severity":"medium"},{"evidence":"Uso de WCF/ASMX","file":"Services\\Orders.svc.cs","id":"LEGACY_SOAP","line":null,"recommendation":"Publicar REST/gRPC equivalentes y migrar consumidores; mantener compatibilidad temporal.","severity":"medium"},{"evidence":"Uso de WCF/ASMX","file":"Web.config","id":"LEGACY_SOAP","line":null,"recommendation":"Publicar REST/gRPC equivalentes y migrar consumidores; mantener compatibilidad temporal.","severity":"medium"},{"evidence":"Posible secreto en código/config","file":"Web.config","id":"SECRETS_IN_CODE","line":null,"recommendation":"Mover secretos a un gestor (Vault/KeyVault/Secret Manager) y rotación.","severity":"high"}],"generated_at":"2025-09-08T04:39:20.009335300Z","inventory":{"summary":{"by_ext":{"Master":1,"ascx":1,"ashx":1,"asmx":1,"aspx":1,"config":1,"cs":7,"cshtml":3,"rdl":1,"rpt":1,"svc":1},"loc_total":75,"total_files":19,"total_size_bytes":3247}},"project":"project","raid":[{"impact":"Medio","mitigation":"REST/gRPC equivalentes; pruebas contractuales.","owner":"APIs","probability":"Media","risk":"SOAP (WCF/ASMX)"},{"impact":"Alto","mitigation":"Vault/KeyVault/Secret Manager, rotación, SAST.","owner":"Seguridad","probability":"Alta","risk":"Secretos en código/config"},{"impact":"Medio","mitigation":"Servicio central de PDF/Reportes; plan de reemplazo.","owner":"Reporting","probability":"Media","risk":"Crystal/SSRS en cliente"}],"sizing":[{"findings":0,"loc":9,"module":"Controllers\\HomeController.cs","size":"XS"},{"findings":0,"loc":2,"module":"Controls\\ProductList.ascx","size":"XS"},{"findings":0,"loc":2,"module":"Controls\\ProductList.ascx.cs","size":"XS"},{"findings":0,"loc":5,"module":"Default.aspx","size":"XS"},{"findings":0,"loc":2,"module":"Default.aspx.cs","size":"XS"},{"findings":0,"loc":1,"module":"Handlers\\Download.ashx","size":"XS"},{"findings":0,"loc":2,"module":"Handlers\\Download.ashx.cs","size":"XS"},{"findings":1,"loc":1,"module":"Reports\\Legacy.rpt","size":"XS"},{"findings":1,"loc":1,"module":"Reports\\Monthly.rdl","size":"XS"},{"findings":1,"loc":1,"module":"Services\\Legacy.asmx","size":"XS"},{"findings":0,"loc":2,"module":"Services\\Legacy.asmx.cs","size":"XS"},{"findings":0,"loc":1,"module":"Services\\Orders.svc","size":"XS"},{"findings":1,"loc":3,"module":"Services\\Orders.svc.cs","size":"XS"},{"findings":0,"loc":10,"module":"Site.Master","size":"XS"},{"findings":0,"loc":2,"module":"Site.Master.cs","size":"XS"},{"findings":0,"loc":5,"module":"Views\\Home\\Index.cshtml","size":"XS"},{"findings":0,"loc":1,"module":"Views\\Home\\_TopSales.cshtml","size":"XS"},{"findings":0,"loc":11,"module":"Views\\Shared\\_Layout.cshtml","size":"XS"},{"findings":2,"loc":14,"module":"Web.config","size":"XS"}],"tool_version":"0.8.1"};window.GRAPH={"nodes":[{"id":"n0","label":"Controllers\\HomeController.cs"},{"id":"n1","label":"Controls\\ProductList.ascx"},{"id":"n2","label":"Controls\\ProductList.ascx.cs"},{"id":"n3","label":"Default.aspx"},{"id":"n4","label":"Default.aspx.cs"},{"id":"n5","label":"Handlers\\Download.ashx"},{"id":"n6","label":"Handlers\\Download.ashx.cs"},{"id":"n7","label":"Reports\\Legacy.rpt"},{"id":"n8","label":"Reports\\Monthly.rdl"},{"id":"n9","label":"Services\\Legacy.asmx"},{"id":"n10","label":"Services\\Legacy.asmx.cs"},{"id":"n11","label":"Services\\Orders.svc"},{"id":"n12","label":"Services\\Orders.svc.cs"},{"id":"n13","label":"Site.Master"},{"id":"n14","label":"Site.Master.cs"},{"id":"n15","label":"Views\\Home\\Index.cshtml"},{"id":"n16","label":"Views\\Home\\_TopSales.cshtml"},{"id":"n17","label":"Views\\Shared\\_Layout.cshtml"},{"id":"n18","label":"Web.config"},{"id":"h_DB","label":"DB"},{"id":"h_WCF","label":"WCF"},{"id":"h_ASMX","label":"ASMX"},{"id":"h_Reports","label":"Reports"},{"id":"h_COM","label":"COM"}],"edges":[{"source":"n7","target":"h_Reports"},{"source":"n8","target":"h_Reports"},{"source":"n9","target":"h_ASMX"},{"source":"n12","target":"h_WCF"},{"source":"n3","target":"n4"},{"source":"n3","target":"n14"},{"source":"n4","target":"n18"},{"source":"n13","target":"n14"},{"source":"n14","target":"n18"},{"source":"n18","target":"h_ASMX"},{"source":"n18","target":"h_DB"},{"source":"n18","target":"h_WCF"}]};
+const R=window.REPORT||{},G=window.GRAPH||{nodes:[],edges:[]};
+const sum=(R.inventory&&R.inventory.summary)||{},find=(R.findings||[]),sizing=(R.sizing||[]),raid=(R.raid||[]),DB=R.db;
+document.getElementById('meta').textContent=(R.generated_at?("Generado: "+R.generated_at):"")+(R.tool_version?(" · v"+R.tool_version):"");
+document.getElementById('k_project').textContent=R.project||"project";
+document.getElementById('k_files').textContent=(sum.total_files||0);
+document.getElementById('k_loc').textContent=(sum.loc_total||0);
+document.getElementById('k_findings').textContent=(find.length||0);
+
+// Severidad
+const sev={high:0,medium:0,low:0}; find.forEach(f=>{const s=(f.severity||"").toLowerCase(); if(sev[s]!=null) sev[s]++;});
+new Chart(document.getElementById('chartSeverity'),{type:'bar',
+ data:{labels:['Alta','Media','Baja'],datasets:[{label:'Cantidad',data:[sev.high,sev.medium,sev.low]}]},
+ options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>{const t=['Alta','Media','Baja'][c.dataIndex];const e=t==='Alta'?'Riesgo crítico.':t==='Media'?'Planificar mitigación.':'Deuda menor.';return `${c.formattedValue} · ${e}`;}}}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+});
+if(!find.length){document.getElementById('noteSeverity').style.display='block';}
+
+// Sizing dona
+const order=['XS','S','M','L','XL']; const count={XS:0,S:0,M:0,L:0,XL:0};
+sizing.forEach(s=>{if(count[s.size]!=null)count[s.size]++;});
+new Chart(document.getElementById('chartSizes'),{type:'doughnut',
+ data:{labels:order,datasets:[{data:order.map(k=>count[k])}]},
+ options:{plugins:{tooltip:{callbacks:{label:(c)=>{const map={XS:'≤100 LOC',S:'101-500',M:'501-2k',L:'2k-5k',XL:'>5k'};return `${c.label}: ${c.formattedValue} módulos (${map[c.label]})`;}}}}}
+});
+
+// Estrategias
+const estrategias=[]; const ids=new Set(find.map(f=>String(f.id||'').toUpperCase())); const labs=new Set((G.nodes||[]).map(n=>n.id));
+const lower=(R.inventory&&R.inventory.files||[]).map(f=>(f.rel_path||'').toLowerCase());
+const hasVB6=lower.some(p=>p.endsWith('.frm')||p.endsWith('.bas')||p.endsWith('.vbp'));
+function add(p,t,why,doit){estrategias.push({p,t,why,doit});}
+if(ids.has('SECRETS_IN_CODE')) add(1,'Secretos en código','Posibles claves en código/config.','Mover a Vault/KeyVault/Secret Manager y rotación; SAST continuo.');
+if(labs.has('h_COM')) add(2,'Dependencias COM/ActiveX','Componentes COM/OCX detectados.','Retiro o wrappers .NET; feature flags para minimizar impacto.');
+if(labs.has('h_WCF')||labs.has('h_ASMX')) add(3,'Servicios SOAP legados','WCF/ASMX presentes.','Publicar REST/gRPC equivalentes y migrar consumidores.');
+if(labs.has('h_DB')) add(4,'Acoplamiento a BD','Acceso SQL directo.','Encapsular en servicios/repositorios; API gateway.');
+if(labs.has('h_Reports')) add(5,'Reportería embebida','Crystal/Reports en cliente.','Centralizar (servicio PDF) y estandarizar plantillas.');
+if(hasVB6) add(6,'Modernización UI VB6','Formularios VB6 detectados.','Migración progresiva a .NET/WPF o Web para pantallas críticas.');
+estrategias.sort((a,b)=>a.p-b.p);
+document.getElementById('estrategias').innerHTML = estrategias.length
+ ? '<ol>'+estrategias.map(e=>`<li><b>${e.t}</b><br><span class="help">Por qué: ${e.why}</span><br><span class="help">Siguiente paso: ${e.doit}</span></li>`).join('')+'</ol>'
+ : '<div class="note">No se detectaron señales suficientes para proponer estrategias.</div>';
+
+// Top hallazgos
+const tb=document.getElementById('tbodyFind');
+find.slice(0,200).forEach(f=>{
+  const s=(f.severity||'').toLowerCase(); const css=s==='high'?'sev-high':s==='medium'?'sev-medium':'sev-low';
+  tb.insertAdjacentHTML('beforeend',`<tr><td>${f.id||''}</td><td class="${css}">${f.severity||''}</td><td>${f.file||''}</td><td>${f.evidence||''}</td><td>${f.recommendation||''}</td></tr>`);
+});
+if(!find.length){document.getElementById('emptyFind').style.display='block';}
+document.getElementById('bfnd').textContent=`${find.length||0} encontrado(s)`;
+
+// RAID
+const tr=document.getElementById('tbodyRaid'); (raid||[]).forEach(r=>{
+  tr.insertAdjacentHTML('beforeend',`<tr><td>${r.risk||''}</td><td>${r.probability||''}</td><td>${r.impact||''}</td><td>${r.mitigation||''}</td><td>${r.owner||''}</td></tr>`);
+});
+if(!(raid&&raid.length)){document.getElementById('emptyRaid').style.display='block';}
+
+// Grafo
+const hubsColors={DB:'#14532d',WCF:'#713f12',ASMX:'#5b2106',Reports:'#0b3b76',COM:'#3f1d38'};
+const nodes=[],edges=[]; (G.nodes||[]).forEach(n=>{
+  const isHub=(n.id||'').startsWith('h_'); const hub=isHub?n.id.slice(2):null;
+  nodes.push({id:n.id,label:n.label,shape:isHub?'box':'ellipse',color:isHub?{background:hubsColors[hub]||'#334155',border:'#1f2937'}:undefined,font:{color:'#e5e7eb',size:12}});
+});
+(G.edges||[]).forEach(e=>edges.push({from:e.source,to:e.target,arrows:'to'}));
+document.getElementById('bedges').textContent=`${edges.length||0} relación(es)`;
+if(!edges.length){document.getElementById('emptyGraph').style.display='block';}
+const data={nodes:new vis.DataSet(nodes),edges:new vis.DataSet(edges)};
+const hasEdges=edges.length>0;
+new vis.Network(document.getElementById('net'),data,{
+  layout: hasEdges?{hierarchical:{direction:'LR',nodeSpacing:120,levelSeparation:160}}:{improvedLayout:true},
+  physics: hasEdges?false:{stabilization:true},
+  interaction:{hover:true,navigationButtons:true,keyboard:true}
+});
+
+if(DB){
+  document.getElementById("dbCard").style.display="block";
+  const s=DB.summary||{}, samp=DB.samples||{};
+  document.getElementById("dbSummary").innerHTML=
+    `<p><b>Tablas:</b> ${s.tables??"-"} &nbsp; <b>Procedimientos:</b> ${s.procedures??"-"} &nbsp; <b>Triggers:</b> ${s.triggers??"-"}</p>
+     <p class="help"><b>Top tablas</b>: <code>${(samp.tables||[]).slice(0,10).join(", ")}</code></p>
+     <p class="help"><b>Top SPs</b>: <code>${(samp.procedures||[]).slice(0,10).join(", ")}</code></p>`;
+}
+</script></body></html>

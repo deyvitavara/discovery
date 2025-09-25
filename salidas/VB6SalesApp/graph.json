@@ -1,0 +1,118 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "label": "Controllers\\HomeController.cs"
+    },
+    {
+      "id": "n1",
+      "label": "Controls\\ProductList.ascx"
+    },
+    {
+      "id": "n2",
+      "label": "Controls\\ProductList.ascx.cs"
+    },
+    {
+      "id": "n3",
+      "label": "Default.aspx"
+    },
+    {
+      "id": "n4",
+      "label": "Default.aspx.cs"
+    },
+    {
+      "id": "n5",
+      "label": "Handlers\\Download.ashx"
+    },
+    {
+      "id": "n6",
+      "label": "Handlers\\Download.ashx.cs"
+    },
+    {
+      "id": "n7",
+      "label": "Reports\\Legacy.rpt"
+    },
+    {
+      "id": "n8",
+      "label": "Reports\\Monthly.rdl"
+    },
+    {
+      "id": "n9",
+      "label": "Services\\Legacy.asmx"
+    },
+    {
+      "id": "n10",
+      "label": "Services\\Legacy.asmx.cs"
+    },
+    {
+      "id": "n11",
+      "label": "Services\\Orders.svc"
+    },
+    {
+      "id": "n12",
+      "label": "Services\\Orders.svc.cs"
+    },
+    {
+      "id": "n13",
+      "label": "Site.Master"
+    },
+    {
+      "id": "n14",
+      "label": "Site.Master.cs"
+    },
+    {
+      "id": "n15",
+      "label": "Views\\Home\\Index.cshtml"
+    },
+    {
+      "id": "n16",
+      "label": "Views\\Home\\_TopSales.cshtml"
+    },
+    {
+      "id": "n17",
+      "label": "Views\\Shared\\_Layout.cshtml"
+    },
+    {
+      "id": "n18",
+      "label": "Web.config"
+    },
+    {
+      "id": "h_DB",
+      "label": "DB"
+    },
+    {
+      "id": "h_WCF",
+      "label": "WCF"
+    },
+    {
+      "id": "h_ASMX",
+      "label": "ASMX"
+    },
+    {
+      "id": "h_Reports",
+      "label": "Reports"
+    },
+    {
+      "id": "h_COM",
+      "label": "COM"
+    }
+  ],
+  "edges": [
+    {
+      "source": "n7",
+      "target": "h_Reports"
+    },
+    {
+      "source": "n8",
+      "target": "h_Reports"
+    },
+    {
+      "source": "n9",
+      "target": "h_ASMX"
+    },
+    {
+      "source": "n12",
+      "target": "h_WCF"
+    }
+  ]
+}

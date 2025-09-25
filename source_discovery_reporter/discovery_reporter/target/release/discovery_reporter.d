@@ -1,0 +1,1 @@
+C:\Deyvi\poc\discoveryblue_v2\source_discovery_reporter\discovery_reporter\target\release\discovery_reporter.exe: C:\Deyvi\poc\discoveryblue_v2\source_discovery_reporter\discovery_reporter\src\main.rs

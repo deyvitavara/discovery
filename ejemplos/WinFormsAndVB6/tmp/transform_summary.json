@@ -1,0 +1,81 @@
+{
+  "files": [
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Default.aspx.cs",
+      "changed": true,
+      "checksum": "8e2d8b416a",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Site.Master.cs",
+      "changed": true,
+      "checksum": "06cf443d87",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Web.config",
+      "changed": true,
+      "checksum": "1274a77447",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Controllers\\HomeController.cs",
+      "changed": true,
+      "checksum": "582e34ad23",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Controls\\ProductList.ascx.cs",
+      "changed": true,
+      "checksum": "00205640da",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Handlers\\Download.ashx.cs",
+      "changed": true,
+      "checksum": "2372754055",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Services\\Legacy.asmx",
+      "changed": true,
+      "checksum": "58b23f9057",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Services\\Legacy.asmx.cs",
+      "changed": true,
+      "checksum": "c00cad5d88",
+      "deterministic": 1,
+      "llm": 1,
+      "confidence": 0.45
+    },
+    {
+      "file": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb\\Services\\Orders.svc.cs",
+      "changed": true,
+      "checksum": "1334dc4309",
+      "deterministic": 0,
+      "llm": 1,
+      "confidence": 0.35
+    }
+  ],
+  "started_at": 1757650004.875839,
+  "pack": "aspnet_asmx",
+  "target": "aspnet-core-rest",
+  "scaffolded": [],
+  "ended_at": 1757650004.978629
+}

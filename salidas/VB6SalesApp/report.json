@@ -1,0 +1,371 @@
+{
+  "findings": [
+    {
+      "evidence": "Crystal Decisions detectado",
+      "file": "Reports\\Legacy.rpt",
+      "id": "CRYSTAL_REPORTS",
+      "line": null,
+      "recommendation": "Servicio central de reportes/PDF, desacoplar del cliente.",
+      "severity": "medium"
+    },
+    {
+      "evidence": "SSRS/ReportViewer detectado",
+      "file": "Reports\\Monthly.rdl",
+      "id": "SSRS_REPORTS",
+      "line": null,
+      "recommendation": "Servicio central de reportes/PDF, desacoplar del cliente.",
+      "severity": "low"
+    },
+    {
+      "evidence": "Uso de WCF/ASMX",
+      "file": "Services\\Legacy.asmx",
+      "id": "LEGACY_SOAP",
+      "line": null,
+      "recommendation": "Publicar REST/gRPC equivalentes y migrar consumidores; mantener compatibilidad temporal.",
+      "severity": "medium"
+    },
+    {
+      "evidence": "Uso de WCF/ASMX",
+      "file": "Services\\Orders.svc.cs",
+      "id": "LEGACY_SOAP",
+      "line": null,
+      "recommendation": "Publicar REST/gRPC equivalentes y migrar consumidores; mantener compatibilidad temporal.",
+      "severity": "medium"
+    },
+    {
+      "evidence": "Uso de WCF/ASMX",
+      "file": "Web.config",
+      "id": "LEGACY_SOAP",
+      "line": null,
+      "recommendation": "Publicar REST/gRPC equivalentes y migrar consumidores; mantener compatibilidad temporal.",
+      "severity": "medium"
+    },
+    {
+      "evidence": "Posible secreto en código/config",
+      "file": "Web.config",
+      "id": "SECRETS_IN_CODE",
+      "line": null,
+      "recommendation": "Mover secretos a un gestor (Vault/KeyVault/Secret Manager) y rotación.",
+      "severity": "high"
+    }
+  ],
+  "generated_at": "2025-09-08T04:39:20.009335300Z",
+  "inventory": {
+    "base_path": "C:\\Deyvi\\poc\\discoveryblue_v2\\ejemplos\\WinFormsAndVB6\\AspNetWeb",
+    "files": [
+      {
+        "bytes": 239,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 9,
+        "modified": null,
+        "rel_path": "Controllers\\HomeController.cs"
+      },
+      {
+        "bytes": 160,
+        "category": "Other",
+        "ext": "ascx",
+        "loc": 2,
+        "modified": null,
+        "rel_path": "Controls\\ProductList.ascx"
+      },
+      {
+        "bytes": 167,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 2,
+        "modified": null,
+        "rel_path": "Controls\\ProductList.ascx.cs"
+      },
+      {
+        "bytes": 350,
+        "category": "Other",
+        "ext": "aspx",
+        "loc": 5,
+        "modified": null,
+        "rel_path": "Default.aspx"
+      },
+      {
+        "bytes": 148,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 2,
+        "modified": null,
+        "rel_path": "Default.aspx.cs"
+      },
+      {
+        "bytes": 98,
+        "category": "Other",
+        "ext": "ashx",
+        "loc": 1,
+        "modified": null,
+        "rel_path": "Handlers\\Download.ashx"
+      },
+      {
+        "bytes": 169,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 2,
+        "modified": null,
+        "rel_path": "Handlers\\Download.ashx.cs"
+      },
+      {
+        "bytes": 20,
+        "category": "Report",
+        "ext": "rpt",
+        "loc": 1,
+        "modified": null,
+        "rel_path": "Reports\\Legacy.rpt"
+      },
+      {
+        "bytes": 39,
+        "category": "Report",
+        "ext": "rdl",
+        "loc": 1,
+        "modified": null,
+        "rel_path": "Reports\\Monthly.rdl"
+      },
+      {
+        "bytes": 94,
+        "category": "Asmx",
+        "ext": "asmx",
+        "loc": 1,
+        "modified": null,
+        "rel_path": "Services\\Legacy.asmx"
+      },
+      {
+        "bytes": 168,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 2,
+        "modified": null,
+        "rel_path": "Services\\Legacy.asmx.cs"
+      },
+      {
+        "bytes": 109,
+        "category": "Other",
+        "ext": "svc",
+        "loc": 1,
+        "modified": null,
+        "rel_path": "Services\\Orders.svc"
+      },
+      {
+        "bytes": 207,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 3,
+        "modified": null,
+        "rel_path": "Services\\Orders.svc.cs"
+      },
+      {
+        "bytes": 338,
+        "category": "Other",
+        "ext": "Master",
+        "loc": 10,
+        "modified": null,
+        "rel_path": "Site.Master"
+      },
+      {
+        "bytes": 150,
+        "category": "Cs",
+        "ext": "cs",
+        "loc": 2,
+        "modified": null,
+        "rel_path": "Site.Master.cs"
+      },
+      {
+        "bytes": 118,
+        "category": "Other",
+        "ext": "cshtml",
+        "loc": 5,
+        "modified": null,
+        "rel_path": "Views\\Home\\Index.cshtml"
+      },
+      {
+        "bytes": 29,
+        "category": "Other",
+        "ext": "cshtml",
+        "loc": 1,
+        "modified": null,
+        "rel_path": "Views\\Home\\_TopSales.cshtml"
+      },
+      {
+        "bytes": 166,
+        "category": "Other",
+        "ext": "cshtml",
+        "loc": 11,
+        "modified": null,
+        "rel_path": "Views\\Shared\\_Layout.cshtml"
+      },
+      {
+        "bytes": 478,
+        "category": "Config",
+        "ext": "config",
+        "loc": 14,
+        "modified": null,
+        "rel_path": "Web.config"
+      }
+    ],
+    "project": "project",
+    "scanned_at": "2025-09-08T04:39:19.993381Z",
+    "summary": {
+      "by_ext": {
+        "Master": 1,
+        "ascx": 1,
+        "ashx": 1,
+        "asmx": 1,
+        "aspx": 1,
+        "config": 1,
+        "cs": 7,
+        "cshtml": 3,
+        "rdl": 1,
+        "rpt": 1,
+        "svc": 1
+      },
+      "loc_total": 75,
+      "total_files": 19,
+      "total_size_bytes": 3247
+    }
+  },
+  "project": "project",
+  "raid": [
+    {
+      "impact": "Medio",
+      "mitigation": "REST/gRPC equivalentes; pruebas contractuales.",
+      "owner": "APIs",
+      "probability": "Media",
+      "risk": "SOAP (WCF/ASMX)"
+    },
+    {
+      "impact": "Alto",
+      "mitigation": "Vault/KeyVault/Secret Manager, rotación, SAST.",
+      "owner": "Seguridad",
+      "probability": "Alta",
+      "risk": "Secretos en código/config"
+    },
+    {
+      "impact": "Medio",
+      "mitigation": "Servicio central de PDF/Reportes; plan de reemplazo.",
+      "owner": "Reporting",
+      "probability": "Media",
+      "risk": "Crystal/SSRS en cliente"
+    }
+  ],
+  "sizing": [
+    {
+      "findings": 0,
+      "loc": 9,
+      "module": "Controllers\\HomeController.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 2,
+      "module": "Controls\\ProductList.ascx",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 2,
+      "module": "Controls\\ProductList.ascx.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 5,
+      "module": "Default.aspx",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 2,
+      "module": "Default.aspx.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 1,
+      "module": "Handlers\\Download.ashx",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 2,
+      "module": "Handlers\\Download.ashx.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 1,
+      "loc": 1,
+      "module": "Reports\\Legacy.rpt",
+      "size": "XS"
+    },
+    {
+      "findings": 1,
+      "loc": 1,
+      "module": "Reports\\Monthly.rdl",
+      "size": "XS"
+    },
+    {
+      "findings": 1,
+      "loc": 1,
+      "module": "Services\\Legacy.asmx",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 2,
+      "module": "Services\\Legacy.asmx.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 1,
+      "module": "Services\\Orders.svc",
+      "size": "XS"
+    },
+    {
+      "findings": 1,
+      "loc": 3,
+      "module": "Services\\Orders.svc.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 10,
+      "module": "Site.Master",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 2,
+      "module": "Site.Master.cs",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 5,
+      "module": "Views\\Home\\Index.cshtml",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 1,
+      "module": "Views\\Home\\_TopSales.cshtml",
+      "size": "XS"
+    },
+    {
+      "findings": 0,
+      "loc": 11,
+      "module": "Views\\Shared\\_Layout.cshtml",
+      "size": "XS"
+    },
+    {
+      "findings": 2,
+      "loc": 14,
+      "module": "Web.config",
+      "size": "XS"
+    }
+  ],
+  "tool_version": "0.8.1"
+}
