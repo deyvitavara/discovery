@@ -1,7 +1,7 @@
 # Discovery Blue — Discovery técnico basado en código
 
 Convierte repositorios reales en un **dashboard accionable** con:
-- **Mapa de dependencias** (grafo) entre módulos y hubs (DB, servicios, reportes, COM).
+- **Mapa de dependencias** (grafo) entre módulos y hubs (servicios, reportes, COM).
 - **Hallazgos priorizados** con severidad y recomendación.
 - **Sizing por módulo** (T-Shirt: XS–XL) para estimaciones iniciales.
 - **RAID** (riesgos/assumptions/issues/dependencias) curado.
