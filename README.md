@@ -5,7 +5,6 @@ Convierte repositorios reales en un **dashboard accionable** con:
 - **Hallazgos priorizados** con severidad y recomendación.
 - **Sizing por módulo** (T-Shirt: XS–XL) para estimaciones iniciales.
 - **RAID** (riesgos/assumptions/issues/dependencias) curado.
-- (Opcional) **Resumen SQL Server** de solo lectura (conteos y ejemplos de objetos).
 
 **Objetivo:** pasar de opiniones a **evidencia** para decidir *qué modernizar primero*, con **velocidad y claridad**.
 
