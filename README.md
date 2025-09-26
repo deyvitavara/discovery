@@ -34,7 +34,6 @@ salidas/
 
 - Windows / Linux / macOS (CLI).
 - Repositorio con código (VB6, .NET WinForms/Libs, ASP clásico, ASP.NET WebForms/MVC, config, reportes, etc.).
-- (Opcional) Acceso **read-only** a SQL Server para el módulo DB.
 
 ---
 
@@ -200,3 +199,6 @@ discovery_reporter.exe ^
   --graph  "C:\proyecto\salidas\graph.json" ^
   --out    "C:\proyecto\salidas\dashboard.html" ^
   --title  "Discovery Blue — Mi Sistema"
+
+
+ 
