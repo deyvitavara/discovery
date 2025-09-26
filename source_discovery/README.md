@@ -1,116 +1,203 @@
-Discovery Tool v0.8.1 (estable) + Reporter HTML
-0) Requisitos
+# Discovery Blue — Discovery técnico basado en código
 
-Rust estable (toolchain stable)
+Convierte repositorios reales en un **dashboard accionable** con:
+- **Mapa de dependencias** (grafo) entre módulos y hubs (DB, servicios, reportes, COM).
+- **Hallazgos priorizados** con severidad y recomendación.
+- **Sizing por módulo** (T-Shirt: XS–XL) para estimaciones iniciales.
+- **RAID** (riesgos/assumptions/issues/dependencias) curado.
+- (Opcional) **Resumen SQL Server** de solo lectura (conteos y ejemplos de objetos).
 
-Windows Command Prompt (cmd.exe)
+**Objetivo:** pasar de opiniones a **evidencia** para decidir *qué modernizar primero*, con **velocidad y claridad**.
 
-1) Compilar (build)
-cargo build --release
+---
 
+## Componentes
 
-Binarios generados:
+- `discovery` (scanner): genera inventario y señales desde el código fuente.
+- `discovery_reporter` (reporter): enriquece el grafo con *edges reales* y produce el **dashboard HTML**.
 
-target\release\discovery-cli.exe
+> El flujo estándar es: **código → report.json + graph.json → dashboard.html**
 
-target\release\discovery_reporter.exe
+---
 
-2) Uso rápido (Windows CMD)
+## Qué genera (artefactos)
 
-Ejemplo usando el proyecto actual como raíz (.).
-Ajusta --path y --include si quieres otro directorio/patrones.
-
-2.1 Escanear → inventario (JSON)
-target\release\discovery-cli.exe scan --path . --include "**/*"
-
-2.2 Analizar → findings + sizing + RAID (JSON)
-target\release\discovery-cli.exe analyze --path . --include "**/*" --out out\report.json
-
-
-Crea la carpeta out si no existe:
-
-mkdir out
-
-2.3 Grafo → GraphML + JSON
-target\release\discovery-cli.exe graph --path . --include "**/*" --graphml out\graph.graphml --json out\graph.json
-
-2.4 Flujo completo (todo en out\)
-target\release\discovery-cli.exe all --path . --include "**/*" --outdir out
+salidas/
+├─ report.json # Inventario (archivos, LOC, hallazgos, sizing, RAID, opcional DB)
+├─ graph.json # Nodos base (archivos, hubs)
+├─ graph_edges.json # Grafo enriquecido con relaciones reales
+└─ dashboard.html # Reporte final navegable (KPI, hallazgos, estrategias, grafo)
 
 
-Esto genera, como mínimo:
+---
 
-out\report.json
+## Requisitos
 
-out\graph.json
+- Windows / Linux / macOS (CLI).
+- Repositorio con código (VB6, .NET WinForms/Libs, ASP clásico, ASP.NET WebForms/MVC, config, reportes, etc.).
+- (Opcional) Acceso **read-only** a SQL Server para el módulo DB.
 
-(y, si está habilitado en tu build, out\graph.graphml)
+---
 
-3) Dashboard HTML (Reporter)
+## Uso rápido (Windows CMD)
 
-Convierte los JSON a un dashboard HTML listo para abrir en el navegador.
+1) **Ejecuta el scanner** sobre tu proyecto:
 
-target\release\discovery_reporter.exe --report "out\report.json" --graph "out\graph.json" --out "out\dashboard.html" --title "Discovery Report"
+```bat
+discovery.exe ^
+  --base "C:\Deyvi\poc\discoveryblue\demo\WinFormsAndVB6" ^
+  --out  "C:\Deyvi\poc\salidas\VB6SalesApp"
+
+Esto deja report.json y graph.json en la carpeta de salida.
+
+Genera el dashboard (enriqueciendo el grafo con edges reales):
+discovery_reporter.exe ^
+  --report "C:\Deyvi\poc\salidas\VB6SalesApp\report.json" ^
+  --graph  "C:\Deyvi\poc\salidas\VB6SalesApp\graph.json" ^
+  --out    "C:\Deyvi\poc\salidas\VB6SalesApp\dashboard.html" ^
+  --title  "Discovery Blue — VB6SalesApp"
 
 
-Abre:
+Abre dashboard.html en tu navegador.
 
-start "" "out\dashboard.html"
+Tip: crea un run_report.cmd con las 2 líneas para regenerar el HTML con doble click.
 
-¿Qué muestra el dashboard?
+Uso (CLI)
+discovery_reporter.exe --report <ruta a report.json> --graph <ruta a graph.json> [opciones]
 
-KPIs: proyecto, #archivos, LOC, #hallazgos
+Opciones:
+  --out     <archivo>   Salida HTML (por defecto: dashboard.html)
+  --title   <texto>     Título visible en el reporte
+  --max-bytes <N>       Límite de lectura por archivo para heurísticas (def: 3,000,000)
 
-Severidad (barras) y tamaños T-shirt (dona)
 
-Estrategias recomendadas (priorizadas a partir de la evidencia)
+¿Qué detecta el reporter?
 
-Top hallazgos (qué/ dónde/ cómo mitigar)
+Servicios:
 
-RAID (riesgos/ supuestos/ issues/ dependencias)
+WCF/ASMX/SOAP: clases/atributos típicos, endpoints en .config, referencias .asmx/.svc/.ashx, uso de MSSOAP en VB6/ASP clásico.
 
-Grafo de dependencias (nodos reales + hubs DB/WCF/ASMX/Reports/COM)
+Reportes: Crystal Reports (VB6/.NET), ReportViewer, RDL/RDLC/RPT.
 
-SQL Server (opcional): conteos y muestras si integraste el lector RO
+COM/ActiveX: CreateObject/GetObject/Server.CreateObject, referencias VBP, etc.
 
-4) Ejemplo con ruta absoluta (tu caso)
+Relaciones internas (archivo → archivo):
 
-Supón código en:
+Llamadas por nombre (VB6/.NET).
 
-C:\Deyvi\poc\discoveryblue_v2\demo\WinFormsAndVB6\VB6\VB6SalesApp
+ASP clásico: <!--#include ... -->.
 
-4.1 Escanear
-cd /d C:\Deyvi\poc\discoveryblue_v2\demo\WinFormsAndVB6\VB6\VB6SalesApp
-C:\ruta\a\tu\repo\target\release\discovery-cli.exe scan --path . --include "**/*"
+WebForms: CodeBehind= y Register Src=.
 
-4.2 Analizar + Grafo
-mkdir C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp
+MVC: Html.Partial/RenderPartial, Layout =, ActionLink/Action.
 
-C:\ruta\a\tu\repo\target\release\discovery-cli.exe analyze --path . --include "**/*" --out C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\report.json
+El grafo posiciona hubs (DB, WCF, ASMX, Reports, COM) y conecta cada archivo con sus dependencias y referencias.
 
-C:\ruta\a\tu\repo\target\release\discovery-cli.exe graph --path . --include "**/*" --graphml C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\graph.graphml --json C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\graph.json
+Estructura mínima de report.json
+{
+  "project": "VB6SalesApp",
+  "generated_at": "2025-09-10T10:30:00Z",
+  "tool_version": "x.y.z",
+  "inventory": {
+    "base_path": "C:\\ruta\\al\\repo",
+    "summary": { "total_files": 1234, "loc_total": 98765 },
+    "files": [
+      { "rel_path": "VB6/frmMain.frm", "ext": "frm" },
+      { "rel_path": "WebApp/Views/Home/Index.cshtml", "ext": "cshtml" }
+    ]
+  },
+  "findings": [
+    { "id": "SECRETS_IN_CODE", "severity": "High", "file": "app.config", "evidence": "connectionString", "recommendation": "Mover a Vault/KeyVault" }
+  ],
+  "sizing": [
+    { "module": "Ventas", "size": "M" }
+  ],
+  "raid": [
+    { "risk": "Dependencia COM", "probability": "Media", "impact": "Alto", "mitigation": "Wrapper .NET y retiro", "owner": "Integraciones" }
+  ],
+  "db": {
+    "summary": { "tables": 245, "procedures": 310, "triggers": 28 },
+    "samples": { "tables": ["Orders", "Customers"], "procedures": ["usp_GetOrders"] }
+  }
+}
 
-4.3 Dashboard HTML
-C:\ruta\a\tu\repo\target\release\discovery_reporter.exe ^
-  --report "C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\report.json" ^
-  --graph  "C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\graph.json" ^
-  --out    "C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\dashboard.html" ^
-  --title  "Discovery Report"
-start "" "C:\Deyvi\poc\discoveryblue_v2\salidas\VB6SalesApp\dashboard.html"
 
-5) Consejos y errores comunes
+Estructura mínima de graph.json
+{
+  "nodes": [
+    { "id": "n1", "label": "frmMain.frm" },
+    { "id": "n2", "label": "frmVentas.frm" },
+    { "id": "h_DB", "label": "DB" }
+  ],
+  "edges": [
+    { "source": "n1", "target": "n2" }
+  ]
+}
 
-“El sistema no puede encontrar el archivo especificado (os error 2)”
-Revisa:
+El reporter añadirá edges detectados y guardará graph_edges.json.
 
-Que report.json y graph.json existan en la ruta que pasas a --report y --graph.
+¿Qué verás en el dashboard.html?
 
-Que las comillas estén bien (usa " en Windows CMD).
+KPIs: proyecto, #archivos, LOC, #hallazgos.
 
-Que la carpeta out\ (o tu --outdir) exista.
+Hallazgos y sizing: barras por severidad + dona XS–XL con tooltip explicativo.
 
-Patrones --include
-El glob "**/*" funciona en CMD tal cual (con comillas dobles).
+Estrategias recomendadas: inferidas de la evidencia (p.ej., COM/WCF/DB/Reportes/VB6).
 
-Grafo vacío
-Si edges = 0, habilita reglas/lecturas en el scanner (llamadas entre formularios, Declare VB6, includes ASP, CodeBehind/ASCX, MVC partials/layouts/actions). El Reporter renderiza lo que llegue en graph.json.
+Top hallazgos: tabla con evidencia y recomendación concreta.
+
+RAID: tabla glosario editable en JSON.
+
+Grafo de dependencias: navegable, a todo el ancho, con hubs y flechas “from → to”.
+
+Buenas prácticas (consultivo)
+
+Evidencia, no opiniones: todo sale del código real y configuración.
+
+Respeto por tu stack: no se etiqueta “legado”; se mapean convivencias y dependencias para priorizar correctamente.
+
+Priorización clara: severidad + tamaño → orden de ejecución razonado.
+
+Riesgo controlado: RAID visible tempranamente para planificar mitigaciones.
+
+Solución de problemas
+
+“No encuentra report.json/graph.json”
+Revisa las rutas exactas (incluye el .json). Ejemplo válido:
+--report "C:\...\salidas\App\report.json" (no la carpeta).
+
+Grafo sin relaciones
+Asegura que el repo incluya archivos de texto (frm/bas/cs/vb/aspx/cshtml/config, etc.).
+Sube --max-bytes si tienes archivos grandes: --max-bytes 6000000.
+
+Imagen del grafo pequeña
+El HTML ya fija 100% de ancho y 720px de alto. Puedes editar #net{ height:... } si quieres más.
+
+Extensión (fácil)
+
+Añade nuevas reglas (regex) en el reporter para detectar otras integraciones.
+
+Amplía sizing y RAID en report.json.
+
+Exporta el dashboard a PDF con tu navegador (Imprimir → Guardar como PDF).
+
+Licencia y crédito
+
+© Discovery Blue. Hecho para equipos que necesitan claridad rápida para decidir y ejecutar con foco.
+
+
+Si quieres, también te dejo un **README corto** para el subproyecto `discovery_reporter` (si lo mantienes separado):
+
+```markdown
+# discovery_reporter
+
+Enriquece `graph.json` con **edges reales** leyendo el código y produce `dashboard.html`.
+
+## Uso
+
+```bat
+discovery_reporter.exe ^
+  --report "C:\proyecto\salidas\report.json" ^
+  --graph  "C:\proyecto\salidas\graph.json" ^
+  --out    "C:\proyecto\salidas\dashboard.html" ^
+  --title  "Discovery Blue — Mi Sistema"
